@@ -73,7 +73,7 @@ add_action('template_redirect', function(){
   }
 });
 
-/** Single content: submitter meta + full social share + disclaimer */
+/** Single content: submitter meta + full social share + disclaimer (append AFTER content) */
 add_filter('the_content', function($content){
   if (!is_singular(['ask','requirement','give','lead','response'])) return $content;
 
@@ -88,13 +88,13 @@ add_filter('the_content', function($content){
   $link = urlencode($link_raw);
   $title= urlencode(get_the_title($id));
 
-  $meta = '<div class="brp-meta"><strong>Submitted by:</strong> '.esc_html($name).' ('.esc_html($city).')';
+  $meta = '<div class="brp-meta"><strong>Submitted by:</strong> '.esc_html($name ?: '—').' ('.esc_html($city ?: '—').')';
   if ($email) $meta .= ' • <a href="mailto:'.esc_attr($email).'">'.esc_html($email).'</a>';
   if ($phone) $meta .= ' • <a href="tel:'.esc_attr($phone).'">'.esc_html($phone).'</a>';
   $meta .= '</div>';
   if ($file) $meta .= '<div class="brp-meta"><a href="'.esc_url($file).'" target="_blank" rel="noopener">Attachment</a></div>';
 
-  // ✅ Full share set: WhatsApp, Telegram, Facebook, LinkedIn, X, Email, Copy
+  // Full share set appended AFTER content so themes can't swallow it
   $share = '<div class="brp-share"><span>Share:</span>
     <a class="brp-sh" target="_blank" rel="noopener" href="https://wa.me/?text='.$title.'%20'.$link.'">WhatsApp</a>
     <a class="brp-sh" target="_blank" rel="noopener" href="https://t.me/share/url?url='.$link.'&text='.$title.'">Telegram</a>
@@ -107,7 +107,10 @@ add_filter('the_content', function($content){
 
   $disclaimer = '<div class="brp-disclaimer"><strong>Disclaimer:</strong> Author permits reposting to social/digital media and takes full responsibility for accuracy, legality and any monetary dealings. Site/admin are not responsible.</div>';
 
-  return $meta.$share.$content.$disclaimer;
+  // Append everything after the main content so it always shows
+  return $content . $meta . $share . $disclaimer;
+}, 20);
+
 });
 
 /** Auto-unpublish posts after End Date (hourly) */
