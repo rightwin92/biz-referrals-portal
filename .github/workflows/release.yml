@@ -1,0 +1,73 @@
+name: Build & Release WordPress Plugin ZIP (versioned + latest)
+
+on:
+  push:
+    tags:
+      - 'v*'              # tag like v1.3
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version tag to build (e.g., v1.3)'
+        required: false
+        default: ''
+
+env:
+  PLUGIN_SLUG: biz-referrals-portal
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+
+      - name: Resolve version
+        id: ver
+        run: |
+          if [ -n "${{ github.event.inputs.version }}" ]; then
+            echo "tag=${{ github.event.inputs.version }}" >> $GITHUB_OUTPUT
+          else
+            echo "tag=${GITHUB_REF_NAME}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Prepare folder
+        run: |
+          mkdir -p dist/${{ env.PLUGIN_SLUG }}
+          rsync -av \
+            --exclude '.git' --exclude '.github' --exclude 'dist' \
+            ./ dist/${{ env.PLUGIN_SLUG }}/
+
+      - name: Make zips (versioned + latest)
+        working-directory: dist
+        run: |
+          zip -r ${{ env.PLUGIN_SLUG }}-${{ steps.ver.outputs.tag }}.zip ${{ env.PLUGIN_SLUG }}
+          cp ${{ env.PLUGIN_SLUG }}-${{ steps.ver.outputs.tag }}.zip ${{ env.PLUGIN_SLUG }}-latest.zip
+
+      - name: Release (versioned)
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/') || github.event_name == 'workflow_dispatch'
+        with:
+          tag_name: ${{ steps.ver.outputs.tag }}
+          name: ${{ steps.ver.outputs.tag }}
+          generate_release_notes: true
+          files: dist/${{ env.PLUGIN_SLUG }}-${{ steps.ver.outputs.tag }}.zip
+
+      - name: Release (latest)
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: latest
+          name: latest
+          draft: false
+          prerelease: false
+          generate_release_notes: false
+          files: dist/${{ env.PLUGIN_SLUG }}-latest.zip
+
+      - name: Print permanent URLs
+        run: |
+          OWNER_REPO="${{ github.repository }}"
+          TAG="${{ steps.ver.outputs.tag }}"
+          echo "## ✅ Permanent Download Links" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Versioned:**  https://github.com/${OWNER_REPO}/releases/download/${TAG}/${{ env.PLUGIN_SLUG }}-${TAG}.zip" >> $GITHUB_STEP_SUMMARY
+          echo "**Always latest:**  https://github.com/${OWNER_REPO}/releases/download/latest/${{ env.PLUGIN_SLUG }}-latest.zip" >> $GITHUB_STEP_SUMMARY
