@@ -3,7 +3,7 @@ name: Build & Release WordPress Plugin ZIP (versioned + latest)
 on:
   push:
     tags:
-      - 'v*'              # tag like v1.3
+      - 'v*'         # triggers when you create a tag like v1.3
   workflow_dispatch:
     inputs:
       version:
@@ -20,7 +20,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with: { fetch-depth: 0 }
+        with:
+          fetch-depth: 0
 
       - name: Resolve version
         id: ver
@@ -34,9 +35,7 @@ jobs:
       - name: Prepare folder
         run: |
           mkdir -p dist/${{ env.PLUGIN_SLUG }}
-          rsync -av \
-            --exclude '.git' --exclude '.github' --exclude 'dist' \
-            ./ dist/${{ env.PLUGIN_SLUG }}/
+          rsync -av --exclude '.git' --exclude '.github' --exclude 'dist' ./ dist/${{ env.PLUGIN_SLUG }}/
 
       - name: Make zips (versioned + latest)
         working-directory: dist
@@ -65,9 +64,7 @@ jobs:
 
       - name: Print permanent URLs
         run: |
-          OWNER_REPO="${{ github.repository }}"
-          TAG="${{ steps.ver.outputs.tag }}"
           echo "## ✅ Permanent Download Links" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**Versioned:**  https://github.com/${OWNER_REPO}/releases/download/${TAG}/${{ env.PLUGIN_SLUG }}-${TAG}.zip" >> $GITHUB_STEP_SUMMARY
-          echo "**Always latest:**  https://github.com/${OWNER_REPO}/releases/download/latest/${{ env.PLUGIN_SLUG }}-latest.zip" >> $GITHUB_STEP_SUMMARY
+          echo "**Versioned:**  https://github.com/rightwin92/biz-referrals-portal/releases/download/${{ steps.ver.outputs.tag }}/${{ env.PLUGIN_SLUG }}-${{ steps.ver.outputs.tag }}.zip" >> $GITHUB_STEP_SUMMARY
+          echo "**Always latest:**  https://github.com/rightwin92/biz-referrals-portal/releases/download/latest/${{ env.PLUGIN_SLUG }}-latest.zip" >> $GITHUB_STEP_SUMMARY
