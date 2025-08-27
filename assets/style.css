@@ -1,0 +1,17 @@
+/* Basic UI */
+.brp-portal, .brp-submit, .brp-dash, .brp-account { border:1px solid #e2e8f0; padding:16px; border-radius:8px; background:#fff; margin-bottom:16px; }
+.brp-tabs { display:flex; gap:8px; margin-bottom:8px; flex-wrap:wrap; }
+.brp-tab { border:1px solid #cbd5e1; background:#f8fafc; padding:8px 12px; cursor:pointer; border-radius:6px; }
+.brp-panel { padding:8px; border:1px dashed #cbd5e1; border-radius:6px; margin-bottom:10px; }
+.brp-lists { display:grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap:12px; }
+.brp-col ul { margin:0; padding-left:18px; }
+.brp-notice { background:#ecfeff; border:1px solid #bae6fd; padding:10px; border-radius:6px; }
+.brp-meta { margin:8px 0; font-size:13px; color:#0f172a; }
+.brp-disclaimer { margin-top:16px; font-size:13px; color:#334155; background:#f1f5f9; padding:10px; border-radius:6px; }
+/* Share */
+.brp-share { display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin:12px 0; }
+.brp-sh, .brp-copy { padding:6px 10px; border:1px solid #e2e8f0; border-radius:20px; background:#f8fafc; font-size:13px; text-decoration:none; cursor:pointer; }
+/* Dashboard */
+.brp-dash-controls { display:flex; gap:8px; margin-bottom:8px; }
+.brp-dash-table { width:100%; border-collapse:collapse; background:#fff; }
+.brp-dash-table th, .brp-dash-table td { border:1px solid #e5e7eb; padding:8px; font-size:14px; }
