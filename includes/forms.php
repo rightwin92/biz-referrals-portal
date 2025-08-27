@@ -174,14 +174,40 @@ add_action('wp_ajax_brp_submit_form', function(){
   }
 
   if (!empty($_FILES['brp_file']['name'])){
-    require_once ABSPATH.'wp-admin/includes/file.php';
-    $allowed = ['application/pdf','video/mp4'];
-    $file = $_FILES['brp_file'];
-    if ($file['size']>10*1024*1024) wp_send_json_error('File too large (max 10MB).');
-    $check = wp_check_filetype($file['name']);
-    if (!$check['type'] || !in_array($check['type'],$allowed,true)) wp_send_json_error('Only PDF or MP4 allowed.');
-    $uploaded = wp_handle_upload($file, ['test_form'=>false]);
-    if (isset($uploaded['url'])) update_post_meta($post_id,'_brp_file_url',$uploaded['url']);
+  require_once ABSPATH.'wp-admin/includes/file.php';
+
+  // 10 MB cap (adjust if needed)
+  if ($_FILES['brp_file']['size'] > 10 * 1024 * 1024) {
+    wp_send_json_error('File too large (max 10MB). Please compress or choose a smaller file.');
+  }
+
+  // Allow common doc/video + images
+  $allowed = [
+    'application/pdf',
+    'video/mp4',
+    'image/jpeg',
+    'image/png',
+    'image/gif',
+    'image/webp'
+  ];
+
+  $check = wp_check_filetype($_FILES['brp_file']['name']);
+  if (!$check['type'] || !in_array($check['type'], $allowed, true)) {
+    wp_send_json_error('Only PDF, MP4, JPG, PNG, GIF, WEBP are allowed.');
+  }
+
+  $uploaded = wp_handle_upload($_FILES['brp_file'], ['test_form'=>false]);
+  if (!empty($uploaded['error'])) {
+    wp_send_json_error('Upload failed: '.$uploaded['error']);
+  }
+
+  if (isset($uploaded['url'])) {
+    update_post_meta($post_id, '_brp_file_url', esc_url_raw($uploaded['url']));
+  } else {
+    wp_send_json_error('Upload failed. Please try again with a smaller file.');
+  }
+}
+
   }
 
   // Notify admin + author
