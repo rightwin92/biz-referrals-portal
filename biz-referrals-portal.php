@@ -17,6 +17,8 @@ require_once BRP_PATH.'includes/forms.php';
 require_once BRP_PATH.'includes/settings.php';
 require_once BRP_PATH.'includes/dashboard.php';
 require_once BRP_PATH.'includes/moderate.php';
+require_once BRP_PATH.'includes/frontpage-override.php';
+
 
 /** Activation / Deactivation */
 register_activation_hook(__FILE__, function(){
