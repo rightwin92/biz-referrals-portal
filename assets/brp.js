@@ -83,12 +83,15 @@ $('#brp-submit-form').on('submit', function(e){
       var link=$card.find('.brpt-card-link').attr('href');
       var title=$card.find('.brpt-title').text();
       var url=encodeURIComponent(link), txt=encodeURIComponent(title);
-      var html='<div class="brp-card-share" style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap;">'
-        +'<a class="brp-sh" href="https://wa.me/?text='+txt+'%20'+url+'" target="_blank" rel="noopener">WA</a>'
-        +'<a class="brp-sh" href="https://t.me/share/url?url='+url+'&text='+txt+'" target="_blank" rel="noopener">TG</a>'
-        +'<a class="brp-sh" href="https://twitter.com/intent/tweet?url='+url+'&text='+txt+'" target="_blank" rel="noopener">X</a>'
-        +'<button class="brp-copy" data-link="'+link+'">Copy</button>'
-        +'</div>';
+            var html = '<div class="brp-card-share" style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap;">'
+        + '<a class="brp-sh" href="https://wa.me/?text='+txt+'%20'+url+'" target="_blank" rel="noopener">WA</a>'
+        + '<a class="brp-sh" href="https://t.me/share/url?url='+url+'&text='+txt+'" target="_blank" rel="noopener">TG</a>'
+        + '<a class="brp-sh" href="https://www.facebook.com/sharer/sharer.php?u='+url+'" target="_blank" rel="noopener">FB</a>'
+        + '<a class="brp-sh" href="https://www.linkedin.com/sharing/share-offsite/?url='+url+'" target="_blank" rel="noopener">IN</a>'
+        + '<a class="brp-sh" href="https://twitter.com/intent/tweet?url='+url+'&text='+txt+'" target="_blank" rel="noopener">X</a>'
+        + '<a class="brp-sh" href="mailto:?subject='+txt+'&body='+url+'" target="_blank" rel="noopener">Email</a>'
+        + '<button class="brp-copy" data-link="'+link+'">Copy</button>'
+        + '</div>';
       $card.find('.brpt-card-footer').append(html);
     });
   }
