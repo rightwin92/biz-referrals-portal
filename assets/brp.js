@@ -15,21 +15,56 @@ jQuery(function($){
     });
   });
 
-  // Submit AJAX
-  $('#brp-submit-form').on('submit', function(e){
-    e.preventDefault();
-    var formData=new FormData(this);
-    formData.append('nonce',BRP_Ajax.nonce);
-    $('#brp-submit-msg').text('Submitting...');
-    $.ajax({
-      url:BRP_Ajax.ajax_url, method:'POST', data:formData, processData:false, contentType:false,
-      success:function(res){
-        if(res.success){ $('#brp-submit-msg').css('color','#16a34a').text(res.data); $('#brp-submit-form')[0].reset(); }
-        else { $('#brp-submit-msg').css('color','#dc2626').text(res.data); }
-      },
-      error:function(){ $('#brp-submit-msg').css('color','#dc2626').text('Error submitting.'); }
-    });
+  // Submit AJAX with progress + friendly errors
+$('#brp-submit-form').on('submit', function(e){
+  e.preventDefault();
+
+  var formData = new FormData(this);
+  formData.append('nonce', BRP_Ajax.nonce);
+
+  var $msg = $('#brp-submit-msg');
+  var $btn = $('#brp-submit-form button[type=submit]');
+  $btn.prop('disabled', true);
+  $msg.css('color','').text('Uploading… 0%');
+
+  $.ajax({
+    url: BRP_Ajax.ajax_url,
+    method: 'POST',
+    data: formData,
+    processData: false,
+    contentType: false,
+    xhr: function(){
+      var xhr = new window.XMLHttpRequest();
+      xhr.upload.addEventListener('progress', function(evt){
+        if (evt.lengthComputable) {
+          var p = Math.round((evt.loaded / evt.total) * 100);
+          $msg.text('Uploading… ' + p + '%');
+        }
+      }, false);
+      return xhr;
+    },
+    success: function(res){
+      if (res && res.success){
+        $msg.css('color','#16a34a').text(res.data || 'Submitted!');
+        $('#brp-submit-form')[0].reset();
+      } else {
+        $msg.css('color','#dc2626').text((res && res.data) ? res.data : 'Upload failed. Please try a smaller file (JPG/PNG/GIF/WEBP/PDF/MP4, max 10MB).');
+      }
+    },
+    error: function(xhr){
+      // Friendly hints for common server limits:
+      if (xhr && xhr.status === 413){
+        $msg.css('color','#dc2626').text('Upload too large for the server. Please resize the file under 10MB or increase server PHP limits.');
+      } else {
+        $msg.css('color','#dc2626').text('Network/server error. Please try again or use a smaller file.');
+      }
+    },
+    complete: function(){
+      $btn.prop('disabled', false);
+    }
   });
+});
+
 
   // Copy link
   $(document).on('click','.brp-copy', function(){
