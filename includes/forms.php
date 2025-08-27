@@ -106,7 +106,9 @@ add_shortcode('brp_submit', function($atts){
         <p><label>End Date (optional)<br><input type="datetime-local" name="brp_end"></label></p>
       </fieldset>
 
-      <p><label>Attachment (PDF/MP4, max 10MB)<br><input type="file" name="brp_file" accept=".pdf,video/mp4"></label></p>
+      <p><label>Attachment (PDF/MP4/JPG/PNG/GIF/WEBP, max 10MB)<br>
+  <input type="file" name="brp_file" accept=".pdf,video/mp4,image/jpeg,image/png,image/gif,image/webp">
+</label></p>
 
       <p><label><input type="checkbox" name="brp_legal" required> I agree that this content may be reposted on social media and I accept full responsibility for its accuracy and all legal/financial dealings. The website/admin are not responsible.</label></p>
 
