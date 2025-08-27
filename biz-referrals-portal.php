@@ -80,13 +80,16 @@ add_filter('the_content', function($content){
   $meta .= '</div>';
   if ($file) $meta .= '<div class="brp-meta"><a href="'.esc_url($file).'" target="_blank" rel="noopener">Attachment</a></div>';
 
-  $share = '<div class="brp-share"><span>Share:</span>
+  $  $share = '<div class="brp-share"><span>Share:</span>
     <a class="brp-sh" target="_blank" rel="noopener" href="https://wa.me/?text='.$title.'%20'.$link.'">WhatsApp</a>
     <a class="brp-sh" target="_blank" rel="noopener" href="https://t.me/share/url?url='.$link.'&text='.$title.'">Telegram</a>
+    <a class="brp-sh" target="_blank" rel="noopener" href="https://www.facebook.com/sharer/sharer.php?u='.$link.'">Facebook</a>
+    <a class="brp-sh" target="_blank" rel="noopener" href="https://www.linkedin.com/sharing/share-offsite/?url='.$link.'">LinkedIn</a>
     <a class="brp-sh" target="_blank" rel="noopener" href="https://twitter.com/intent/tweet?url='.$link.'&text='.$title.'">X</a>
     <a class="brp-sh" target="_blank" rel="noopener" href="mailto:?subject='.$title.'&body='.$link.'">Email</a>
     <button class="brp-copy" data-link="'.esc_attr(get_permalink($id)).'">Copy Link</button>
   </div>';
+
 
   $disclaimer = '<div class="brp-disclaimer"><strong>Disclaimer:</strong> Author permits reposting to social/digital media and takes full responsibility for accuracy, legality and any monetary dealings. Site/admin are not responsible.</div>';
 
