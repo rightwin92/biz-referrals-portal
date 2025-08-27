@@ -15,3 +15,7 @@
 .brp-dash-controls { display:flex; gap:8px; margin-bottom:8px; }
 .brp-dash-table { width:100%; border-collapse:collapse; background:#fff; }
 .brp-dash-table th, .brp-dash-table td { border:1px solid #e5e7eb; padding:8px; font-size:14px; }
+/* Ensure share buttons are visible */
+.brp-share { display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin:12px 0; }
+.brp-share .brp-sh, .brp-copy { display:inline-block; text-decoration:none; color:#111827; }
+.brp-share .brp-sh:hover, .brp-copy:hover { text-decoration:underline; }
