@@ -2,23 +2,29 @@
 /**
  * Plugin Name: Biz Referrals Portal
  * Description: Front-end portal for Ask / Requirement / Give / Lead / Response with moderation, login/register tabs, scheduling, share buttons, author dashboard, and admin moderation screen.
- * Version: 1.3.2
+ * Version: 1.3.6
  * Author: BRP Team
  * License: GPL2+
  */
 if (!defined('ABSPATH')) exit;
 
-define('BRP_VER','1.3.2');
+define('BRP_VER','1.3.6');
 define('BRP_PATH', plugin_dir_path(__FILE__));
 define('BRP_URL', plugin_dir_url(__FILE__));
 
-require_once BRP_PATH.'includes/cpt.php';
-require_once BRP_PATH.'includes/forms.php';
-require_once BRP_PATH.'includes/settings.php';
-require_once BRP_PATH.'includes/dashboard.php';
-require_once BRP_PATH.'includes/moderate.php';
-require_once BRP_PATH.'includes/frontpage-override.php';
+/** Safely load includes (no fatal if a file is missing) */
+function brp_safe_require($rel){
+  $abs = BRP_PATH . ltrim($rel,'/');
+  if (file_exists($abs)) require_once $abs;
+  else error_log('[BRP] Missing include: '.$abs);
+}
 
+brp_safe_require('includes/cpt.php');
+brp_safe_require('includes/forms.php');
+brp_safe_require('includes/settings.php');
+brp_safe_require('includes/dashboard.php');
+brp_safe_require('includes/moderate.php');
+brp_safe_require('includes/frontpage-override.php'); // now guarded
 
 /** Activation / Deactivation */
 register_activation_hook(__FILE__, function(){
@@ -96,7 +102,6 @@ add_filter('the_content', function($content){
   $meta .= '</div>';
   if ($file) $meta .= '<div class="brp-meta"><a href="'.esc_url($file).'" target="_blank" rel="noopener">Attachment</a></div>';
 
-  // Full share set appended AFTER content so themes can't swallow it
   $share = '<div class="brp-share"><span>Share:</span>
     <a class="brp-sh" target="_blank" rel="noopener" href="https://wa.me/?text='.$title.'%20'.$link.'">WhatsApp</a>
     <a class="brp-sh" target="_blank" rel="noopener" href="https://t.me/share/url?url='.$link.'&text='.$title.'">Telegram</a>
@@ -109,11 +114,8 @@ add_filter('the_content', function($content){
 
   $disclaimer = '<div class="brp-disclaimer"><strong>Disclaimer:</strong> Author permits reposting to social/digital media and takes full responsibility for accuracy, legality and any monetary dealings. Site/admin are not responsible.</div>';
 
-  // Append everything after the main content so it always shows
   return $content . $meta . $share . $disclaimer;
 }, 20);
-
-});
 
 /** Auto-unpublish posts after End Date (hourly) */
 add_action('brp_hourly_cron', function(){
