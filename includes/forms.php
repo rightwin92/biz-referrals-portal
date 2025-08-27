@@ -172,8 +172,7 @@ add_action('wp_ajax_brp_submit_form', function(){
     $parent = intval($_POST['parent_ask'] ?? 0);
     if ($parent) update_post_meta($post_id,'_brp_parent_ask',$parent);
   }
-
-  if (!empty($_FILES['brp_file']['name'])){
+if (!empty($_FILES['brp_file']['name'])){
   require_once ABSPATH.'wp-admin/includes/file.php';
 
   // 10 MB cap (adjust if needed)
@@ -208,7 +207,6 @@ add_action('wp_ajax_brp_submit_form', function(){
   }
 }
 
-  }
 
   // Notify admin + author
   $admin = get_option('admin_email');
