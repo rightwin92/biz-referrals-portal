@@ -55,9 +55,12 @@ add_action('wp_enqueue_scripts', function(){
   wp_enqueue_style('brp-style', BRP_URL.'assets/style.css', [], BRP_VER);
   wp_enqueue_script('brp-js', BRP_URL.'assets/brp.js', ['jquery'], BRP_VER, true);
   wp_localize_script('brp-js', 'BRP_Ajax', [
-    'ajax_url'=>admin_url('admin-ajax.php'),
-    'nonce'=>wp_create_nonce('brp_nonce')
-  ]);
+  'ajax_url'     => admin_url('admin-ajax.php'),
+  'nonce'        => wp_create_nonce('brp_nonce'),
+  'nonce_action' => 'brp_nonce',
+  'site_url'     => home_url('/')
+]);
+
 });
 
 /** (Optional) Allow WEBP uploads on older WP */
