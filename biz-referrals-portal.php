@@ -97,6 +97,37 @@ add_action('template_redirect', function(){
 
 /** Single content: submitter meta + full social share + disclaimer (append AFTER content) */
 add_filter('the_content', function($content){
+  /** Helper: build CTA HTML (Like + Enquiry) */
+function brp_build_cta_html($post_id, $phone, $email){
+  $likes    = brp_get_count($post_id, '_brp_like_count');
+  $enquires = brp_get_count($post_id, '_brp_enquiry_count');
+
+  // WhatsApp link (strip non-digits; needs country code in the number)
+  $wa_link = '';
+  if ($phone){
+    $wa_link = 'https://wa.me/'.preg_replace('/\D+/','', $phone).'?text='.
+               rawurlencode('Hi, I found your post: '.get_the_title($post_id).' ('.get_permalink($post_id).')');
+  }
+  // Email link
+  $em_link = '';
+  if ($email){
+    $em_link = 'mailto:'.rawurlencode($email).'?subject='.
+               rawurlencode('Regarding: '.get_the_title($post_id)).'&body='.
+               rawurlencode('Hi, I found your post here: '.get_permalink($post_id));
+  }
+
+  $cta  = '<div class="brp-cta" data-post="'.$post_id.'">';
+  $cta .= '<button class="brp-like-btn" data-post="'.$post_id.'" aria-label="I\'m Interested">👍 I\'m Interested <span class="brp-like-count">'.$likes.'</span></button> ';
+  // Enquiry buttons increment the same enquiry counter
+  if ($wa_link) $cta .= '<a class="brp-enq-btn brp-enq-wa" data-post="'.$post_id.'" data-track="enquiry" href="'.$wa_link.'" target="_blank" rel="noopener">WhatsApp Contributor <span class="brp-enq-count">'.$enquires.'</span></a> ';
+  if ($em_link) $cta .= '<a class="brp-enq-btn brp-enq-mail" data-post="'.$post_id.'" data-track="enquiry" href="'.$em_link.'">Email Contributor <span class="brp-enq-count">'.$enquires.'</span></a>';
+  $cta .= '</div>';
+
+  return $cta;
+}
+
+/** Single content: meta + share + CTA + disclaimer (append AFTER content; late priority) */
+add_filter('the_content', function($content){
   if (!is_singular(['ask','requirement','give','lead','response'])) return $content;
 
   $id   = get_the_ID();
@@ -116,6 +147,7 @@ add_filter('the_content', function($content){
   $meta .= '</div>';
   if ($file) $meta .= '<div class="brp-meta"><a href="'.esc_url($file).'" target="_blank" rel="noopener">Attachment</a></div>';
 
+  // Share row
   $share = '<div class="brp-share"><span>Share:</span>
     <a class="brp-sh" target="_blank" rel="noopener" href="https://wa.me/?text='.$title.'%20'.$link.'">WhatsApp</a>
     <a class="brp-sh" target="_blank" rel="noopener" href="https://t.me/share/url?url='.$link.'&text='.$title.'">Telegram</a>
@@ -126,42 +158,14 @@ add_filter('the_content', function($content){
     <button class="brp-copy" data-link="'.esc_attr($link_raw).'">Copy Link</button>
   </div>';
 
-  $disclaimer = '<div class="brp-disclaimer"><strong>Disclaimer:</strong> Author permits reposting to social/digital media and takes full responsibility for accuracy, legality and any monetary dealings. Site/admin are not responsible.</div>';
-
-  return $content . $meta .   // ✅ Full share set
-  $share = '<div class="brp-share"><span>Share:</span>
-    <a class="brp-sh" target="_blank" rel="noopener" href="https://wa.me/?text='.$title.'%20'.$link.'">WhatsApp</a>
-    <a class="brp-sh" target="_blank" rel="noopener" href="https://t.me/share/url?url='.$link.'&text='.$title.'">Telegram</a>
-    <a class="brp-sh" target="_blank" rel="noopener" href="https://www.facebook.com/sharer/sharer.php?u='.$link.'">Facebook</a>
-    <a class="brp-sh" target="_blank" rel="noopener" href="https://www.linkedin.com/sharing/share-offsite/?url='.$link.'">LinkedIn</a>
-    <a class="brp-sh" target="_blank" rel="noopener" href="https://twitter.com/intent/tweet?url='.$link.'&text='.$title.'">X</a>
-    <a class="brp-sh" target="_blank" rel="noopener" href="mailto:?subject='.$title.'&body='.$link.'">Email</a>
-    <button class="brp-copy" data-link="'.esc_attr($link_raw).'">Copy Link</button>
-  </div>';
-
-  // ✅ CTA + Counters
-  $likes    = brp_get_count($id, '_brp_like_count');
-  $enquires = brp_get_count($id, '_brp_enquiry_count');
-
-  $wa_link  = '';
-  $em_link  = '';
-  if ($phone) { // WhatsApp direct to contributor (fallback: wa.me without text)
-    $wa_link = 'https://wa.me/'.preg_replace('/\D+/','', $phone).'?text='.rawurlencode('Hi, I found your post: '.get_the_title($id).' ('.get_permalink($id).')');
-  }
-  if ($email) { // Email
-    $em_link = 'mailto:'.rawurlencode($email).'?subject='.rawurlencode('Regarding: '.get_the_title($id)).'&body='.rawurlencode('Hi, I found your post here: '.get_permalink($id));
-  }
-
-  $cta  = '<div class="brp-cta" data-post="'.$id.'">';
-  $cta .= '<button class="brp-like-btn" data-post="'.$id.'" aria-label="I\'m Interested">👍 I\'m Interested <span class="brp-like-count">'.$likes.'</span></button> ';
-  if ($wa_link) $cta .= '<a class="brp-enq-btn brp-enq-wa" data-post="'.$id.'" data-track="enquiry" href="'.$wa_link.'" target="_blank" rel="noopener">WhatsApp Contributor <span class="brp-enq-count">'.$enquires.'</span></a> ';
-  if ($em_link) $cta .= '<a class="brp-enq-btn brp-enq-mail" data-post="'.$id.'" data-track="enquiry" href="'.$em_link.'">Email Contributor <span class="brp-enq-count">'.$enquires.'</span></a>';
-  $cta .= '</div>';
+  // CTA (always shows; if phone/email missing, only 👍 button shows)
+  $cta = brp_build_cta_html($id, $phone, $email);
 
   $disclaimer = '<div class="brp-disclaimer"><strong>Disclaimer:</strong> Author permits reposting to social/digital media and takes full responsibility for accuracy, legality and any monetary dealings. Site/admin are not responsible.</div>';
 
+  // Append after the main content so themes/builders can't swallow it
   return $content . $meta . $share . $cta . $disclaimer;
-}, 20);
+}, 99);
 
 /** Auto-unpublish posts after End Date (hourly) */
 add_action('brp_hourly_cron', function(){
