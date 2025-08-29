@@ -207,4 +207,23 @@ add_action('brp_send_end_reminder', function($post_id){
   $subject = 'Reminder: Your post ends soon – '.$post->post_title;
   $body = "Hello,\n\nYour post \"{$post->post_title}\" will end soon. If you wish to extend it, update the End Date.\n\nThanks,\n{$site}";
   wp_mail($to,$subject,$body);
+  /** AJAX: like/enquiry counters (public) */
+function brp_validate_counter_request(){
+  if (!isset($_POST['nonce']) || !wp_verify_nonce($_POST['nonce'], 'brp_nonce')) wp_send_json_error('Bad nonce.');
+  $post_id = isset($_POST['post_id']) ? intval($_POST['post_id']) : 0;
+  if (!$post_id || !get_post($post_id)) wp_send_json_error('Bad post.');
+  $type = isset($_POST['type']) ? sanitize_text_field($_POST['type']) : '';
+  if (!in_array($type, ['like','enquiry'], true)) wp_send_json_error('Bad type.');
+  return [$post_id, $type];
+}
+
+/** Basic duplicate prevention: localStorage key is enforced in JS; server remains stateless */
+add_action('wp_ajax_nopriv_brp_track_interest', 'brp_track_interest');
+add_action('wp_ajax_brp_track_interest', 'brp_track_interest');
+function brp_track_interest(){
+  list($post_id, $type) = brp_validate_counter_request();
+  $key = ($type === 'like') ? '_brp_like_count' : '_brp_enquiry_count';
+  $val = brp_inc_count_once($post_id, $key);
+  wp_send_json_success(['post_id'=>$post_id, 'type'=>$type, 'count'=>$val]);
+}
 });
