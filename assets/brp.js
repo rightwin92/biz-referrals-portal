@@ -144,4 +144,22 @@ jQuery(function($){
       $card.find('.brpt-card-footer').append(html);
     });
   }
+  // Interested (Like)
+$(document).on('click', '.brp-like-btn', function(e){
+  var $btn = $(this), pid = parseInt($btn.data('post'), 10);
+  if(!pid) return;
+  if(brpSeen(pid,'like')){ $btn.prop('disabled', true).text('👍 Interested ✓'); return; }
+  $btn.prop('disabled', true).text('👍 Interested ✓');
+  brpSendCount(pid, 'like', $btn);
+});
+
+// Enquiry (WhatsApp/Email)
+$(document).on('click', '.brp-enq-btn', function(e){
+  var $a = $(this), pid = parseInt($a.data('post'), 10);
+  if(!pid) return;
+  if(!brpSeen(pid,'enquiry')){
+    brpSendCount(pid, 'enquiry', $a);
+  }
+  // let the navigation happen normally
+});
 });
