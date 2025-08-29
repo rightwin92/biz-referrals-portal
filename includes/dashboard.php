@@ -50,10 +50,12 @@ add_shortcode('brp_dashboard', function($atts){
             <td><input type="checkbox" name="brp_ids[]" value="<?php echo esc_attr($id); ?>"></td>
             <td><a href="<?php echo esc_url(get_permalink()); ?>" target="_blank"><?php the_title(); ?></a></td>
             <td><?php echo esc_html(ucfirst(get_post_type())); ?></td>
-            <td><?php echo esc_html(get_post_status()); ?></td>
-            <td><?php echo get_post_meta($id,'_brp_active',true)?'Yes':'No'; ?></td>
-            <td><?php echo esc_html(get_post_meta($id,'_brp_start',true)); ?></td>
-            <td><?php echo esc_html(get_post_meta($id,'_brp_end',true)); ?></td>
+<td><?php echo esc_html(get_post_status()); ?></td>
+<td><?php echo get_post_meta($id,'_brp_active',true)?'Yes':'No'; ?></td>
+<td><?php echo (int) get_post_meta($id,'_brp_like_count', true); ?></td>
+<td><?php echo (int) get_post_meta($id,'_brp_enquiry_count', true); ?></td>
+<td><?php echo esc_html(get_post_meta($id,'_brp_start',true)); ?></td>
+<td><?php echo esc_html(get_post_meta($id,'_brp_end',true)); ?></td>
           </tr>
         <?php endwhile; wp_reset_postdata(); else: ?>
           <tr><td colspan="7">No posts yet.</td></tr>
