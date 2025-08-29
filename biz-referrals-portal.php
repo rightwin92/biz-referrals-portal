@@ -128,7 +128,39 @@ add_filter('the_content', function($content){
 
   $disclaimer = '<div class="brp-disclaimer"><strong>Disclaimer:</strong> Author permits reposting to social/digital media and takes full responsibility for accuracy, legality and any monetary dealings. Site/admin are not responsible.</div>';
 
-  return $content . $meta . $share . $disclaimer;
+  return $content . $meta .   // ✅ Full share set
+  $share = '<div class="brp-share"><span>Share:</span>
+    <a class="brp-sh" target="_blank" rel="noopener" href="https://wa.me/?text='.$title.'%20'.$link.'">WhatsApp</a>
+    <a class="brp-sh" target="_blank" rel="noopener" href="https://t.me/share/url?url='.$link.'&text='.$title.'">Telegram</a>
+    <a class="brp-sh" target="_blank" rel="noopener" href="https://www.facebook.com/sharer/sharer.php?u='.$link.'">Facebook</a>
+    <a class="brp-sh" target="_blank" rel="noopener" href="https://www.linkedin.com/sharing/share-offsite/?url='.$link.'">LinkedIn</a>
+    <a class="brp-sh" target="_blank" rel="noopener" href="https://twitter.com/intent/tweet?url='.$link.'&text='.$title.'">X</a>
+    <a class="brp-sh" target="_blank" rel="noopener" href="mailto:?subject='.$title.'&body='.$link.'">Email</a>
+    <button class="brp-copy" data-link="'.esc_attr($link_raw).'">Copy Link</button>
+  </div>';
+
+  // ✅ CTA + Counters
+  $likes    = brp_get_count($id, '_brp_like_count');
+  $enquires = brp_get_count($id, '_brp_enquiry_count');
+
+  $wa_link  = '';
+  $em_link  = '';
+  if ($phone) { // WhatsApp direct to contributor (fallback: wa.me without text)
+    $wa_link = 'https://wa.me/'.preg_replace('/\D+/','', $phone).'?text='.rawurlencode('Hi, I found your post: '.get_the_title($id).' ('.get_permalink($id).')');
+  }
+  if ($email) { // Email
+    $em_link = 'mailto:'.rawurlencode($email).'?subject='.rawurlencode('Regarding: '.get_the_title($id)).'&body='.rawurlencode('Hi, I found your post here: '.get_permalink($id));
+  }
+
+  $cta  = '<div class="brp-cta" data-post="'.$id.'">';
+  $cta .= '<button class="brp-like-btn" data-post="'.$id.'" aria-label="I\'m Interested">👍 I\'m Interested <span class="brp-like-count">'.$likes.'</span></button> ';
+  if ($wa_link) $cta .= '<a class="brp-enq-btn brp-enq-wa" data-post="'.$id.'" data-track="enquiry" href="'.$wa_link.'" target="_blank" rel="noopener">WhatsApp Contributor <span class="brp-enq-count">'.$enquires.'</span></a> ';
+  if ($em_link) $cta .= '<a class="brp-enq-btn brp-enq-mail" data-post="'.$id.'" data-track="enquiry" href="'.$em_link.'">Email Contributor <span class="brp-enq-count">'.$enquires.'</span></a>';
+  $cta .= '</div>';
+
+  $disclaimer = '<div class="brp-disclaimer"><strong>Disclaimer:</strong> Author permits reposting to social/digital media and takes full responsibility for accuracy, legality and any monetary dealings. Site/admin are not responsible.</div>';
+
+  return $content . $meta . $share . $cta . $disclaimer;
 }, 20);
 
 /** Auto-unpublish posts after End Date (hourly) */
