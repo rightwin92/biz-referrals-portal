@@ -40,7 +40,10 @@ add_shortcode('brp_dashboard', function($atts){
         <button class="button">Apply</button>
       </div>
       <table class="brp-dash-table">
-        <thead><tr><th><input type="checkbox" onclick="document.querySelectorAll('.brp-dash-table input[type=checkbox]').forEach(cb=>cb.checked=this.checked)"></th><th>Title</th><th>Type</th><th>Status</th><th>Active</th><th>Start</th><th>End</th></tr></thead>
+        <thead><tr>
+  <th><input type="checkbox" onclick="document.querySelectorAll('.brp-dash-table input[type=checkbox]').forEach(cb=>cb.checked=this.checked)"></th>
+  <th>Title</th><th>Type</th><th>Status</th><th>Active</th><th>Likes</th><th>Enquiries</th><th>Start</th><th>End</th>
+</tr></thead>
         <tbody>
         <?php if($q->have_posts()): while($q->have_posts()): $q->the_post(); $id=get_the_ID(); ?>
           <tr>
