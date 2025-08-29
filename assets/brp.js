@@ -1,3 +1,40 @@
+function brpKey(postId, type){ return 'brp_'+type+'_p'+postId; }
+function brpMark(postId, type){ try{ localStorage.setItem(brpKey(postId,type), '1'); }catch(e){} }
+function brpSeen(postId, type){ try{ return localStorage.getItem(brpKey(postId,type))==='1'; }catch(e){ return false; } }
+function brpUpdateCount($el, type, val){
+  if(type==='like'){ $el.closest('.brp-cta').find('.brp-like-count').text(val); }
+  if(type==='enquiry'){ $el.closest('.brp-cta').find('.brp-enq-count').text(val); }
+}
+function brpSendCount(postId, type, $el){
+  if(brpSeen(postId, type)) return; // already counted
+  var data = new FormData();
+  data.append('action','brp_track_interest');
+  data.append('nonce', BRP_Ajax.nonce);
+  data.append('post_id', postId);
+  data.append('type', type);
+
+  // Try sendBeacon first (won't block navigation)
+  if (navigator.sendBeacon) {
+    var params = new URLSearchParams();
+    params.append('action','brp_track_interest');
+    params.append('nonce', BRP_Ajax.nonce);
+    params.append('post_id', postId);
+    params.append('type', type);
+    var ok = navigator.sendBeacon(BRP_Ajax.ajax_url, params);
+    if(ok){ brpMark(postId,type); }
+    return;
+  }
+
+  // Fallback AJAX (non-blocking enough)
+  $.ajax({
+    url: BRP_Ajax.ajax_url, method:'POST', data: data, processData:false, contentType:false
+  }).always(function(res){
+    if(res && res.success && res.data && typeof res.data.count !== 'undefined'){
+      brpMark(postId, type);
+      if($el) brpUpdateCount($el, type, res.data.count);
+    }
+  });
+}
 jQuery(function($){
   // Tabs (login/register/forgot)
   $('.brp-tab').on('click', function(){
