@@ -2,13 +2,13 @@
 /**
  * Plugin Name: Biz Referrals Portal
  * Description: Front-end portal for Ask / Requirement / Give / Lead / Response with moderation, login/register tabs, scheduling, share buttons, author dashboard, and admin moderation screen.
- * Version: 1.3.6
+ * Version: 1.4.1
  * Author: BRP Team
  * License: GPL2+
  */
 if (!defined('ABSPATH')) exit;
 
-define('BRP_VER','1.3.6');
+define('BRP_VER','1.4.1');
 define('BRP_PATH', plugin_dir_path(__FILE__));
 define('BRP_URL', plugin_dir_url(__FILE__));
 
