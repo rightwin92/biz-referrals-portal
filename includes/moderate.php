@@ -53,17 +53,22 @@ function brp_render_moderate(){
         <button class="button button-primary">Apply</button>
       </div>
       <table class="widefat">
-        <thead><tr><th><input type="checkbox" onclick="document.querySelectorAll('.brp-mod input[type=checkbox]').forEach(cb=>cb.checked=this.checked)"></th><th>Title</th><th>Type</th><th>Status</th><th>Active</th><th>Author</th><th>Date</th></tr></thead>
+        <thead><tr>
+  <th><input type="checkbox" onclick="document.querySelectorAll('.brp-mod input[type=checkbox]').forEach(cb=>cb.checked=this.checked)"></th>
+  <th>Title</th><th>Type</th><th>Status</th><th>Active</th><th>Likes</th><th>Enquiries</th><th>Author</th><th>Date</th>
+</tr></thead>
         <tbody class="brp-mod">
         <?php if($q->have_posts()): while($q->have_posts()): $q->the_post(); $id=get_the_ID(); ?>
           <tr>
             <td><input type="checkbox" name="ids[]" value="<?php echo esc_attr($id); ?>"></td>
             <td><a href="<?php echo esc_url(get_edit_post_link($id)); ?>"><?php the_title(); ?></a></td>
             <td><?php echo esc_html(ucfirst(get_post_type())); ?></td>
-            <td><?php echo esc_html(get_post_status()); ?></td>
-            <td><?php echo get_post_meta($id,'_brp_active',true)?'Yes':'No'; ?></td>
-            <td><?php the_author(); ?></td>
-            <td><?php echo esc_html(get_the_date().' '.get_the_time()); ?></td>
+<td><?php echo esc_html(get_post_status()); ?></td>
+<td><?php echo get_post_meta($id,'_brp_active',true)?'Yes':'No'; ?></td>
+<td><?php echo (int) get_post_meta($id,'_brp_like_count', true); ?></td>
+<td><?php echo (int) get_post_meta($id,'_brp_enquiry_count', true); ?></td>
+<td><?php the_author(); ?></td>
+<td><?php echo esc_html(get_the_date().' '.get_the_time()); ?></td>
           </tr>
         <?php endwhile; wp_reset_postdata(); else: ?>
           <tr><td colspan="7">No posts found.</td></tr>
