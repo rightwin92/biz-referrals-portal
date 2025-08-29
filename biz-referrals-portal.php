@@ -12,6 +12,17 @@ define('BRP_VER','1.3.6');
 define('BRP_PATH', plugin_dir_path(__FILE__));
 define('BRP_URL', plugin_dir_url(__FILE__));
 
+/** Counter helpers */
+function brp_get_count($post_id, $key){
+  $v = (int) get_post_meta($post_id, $key, true);
+  return max(0, $v);
+}
+function brp_inc_count_once($post_id, $key){
+  $v = brp_get_count($post_id, $key) + 1;
+  update_post_meta($post_id, $key, $v);
+  return $v;
+}
+
 /** Safely load includes (no fatal if a file is missing) */
 function brp_safe_require($rel){
   $abs = BRP_PATH . ltrim($rel,'/');
