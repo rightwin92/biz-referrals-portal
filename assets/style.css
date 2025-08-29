@@ -27,3 +27,7 @@
 .brp-like-btn, .brp-enq-btn { border:1px solid #e2e8f0; background:#f8fafc; padding:6px 12px; border-radius:18px; text-decoration:none; cursor:pointer; font-size:14px; }
 .brp-like-btn[disabled] { opacity:.7; cursor:default; }
 .brp-like-count, .brp-enq-count { background:#eef2ff; padding:2px 8px; border-radius:12px; margin-left:6px; font-weight:600; }
+.brp-cta { display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin:12px 0; }
+.brp-like-btn, .brp-enq-btn { border:1px solid #e2e8f0; background:#f8fafc; padding:6px 12px; border-radius:18px; text-decoration:none; cursor:pointer; font-size:14px; }
+.brp-like-btn[disabled] { opacity:.7; cursor:default; }
+.brp-like-count, .brp-enq-count { background:#eef2ff; padding:2px 8px; border-radius:12px; margin-left:6px; font-weight:600; }
